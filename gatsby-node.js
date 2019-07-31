@@ -59,7 +59,7 @@ exports.onPostBuild = async () => new Promise((resolve, reject) => {
 
       // eslint-disable-next-line no-console
       console.log(
-        `${stats.length} SVGs minified, reducing the total size from ${beforeSize} bytes to ${afterSize} bytes!`,
+        `${stats.length} SVGs minified, reducing the total size from ${beforeSize} bytes to ${afterSize} bytes, a reduction of ${(100 * (beforeSize - afterSize) / beforeSize).toFixed(1)}%!`,
       );
     }
     resolve();
