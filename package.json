@@ -2,7 +2,7 @@
   "name": "gatsby-plugin-optimize-svgs",
   "version": "1.0.0",
   "description": "A Gatsby Plugin to minify SVGs at the end of the build.",
-  "main": "n/a",
+  "main": "index.js",
   "scripts": {
     "lint": "eslint --cache --ext .js ."
   },
