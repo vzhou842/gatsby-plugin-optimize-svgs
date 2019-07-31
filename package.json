@@ -1,11 +1,12 @@
 {
   "name": "gatsby-plugin-optimize-svgs",
   "version": "1.0.0",
-  "description": "",
+  "description": "A Gatsby Plugin to minify SVGs at the end of the build.",
   "main": "n/a",
   "scripts": {
     "lint": "eslint --cache --ext .js ."
   },
+  "repository": "https://github.com/vzhou842/gatsby-plugin-optimize-svgs",
   "author": "Victor Zhou <vzhou842@gmail.com>",
   "license": "MIT",
   "dependencies": {
