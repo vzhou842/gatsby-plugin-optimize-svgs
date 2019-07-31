@@ -7,6 +7,7 @@ const path = require('path');
 const svgo = new SVGO();
 const cwd = process.cwd();
 
+// Resolves with [beforeSize, afterSize]
 async function optimizeSVG(svgPath) {
   return new Promise((resolve, reject) => {
     const fullPath = path.join(cwd, svgPath);
@@ -22,7 +23,7 @@ async function optimizeSVG(svgPath) {
             if (writeErr) {
               reject(writeErr);
             } else {
-              resolve();
+              resolve([data.length, result.length]);
             }
           });
         })
@@ -31,13 +32,14 @@ async function optimizeSVG(svgPath) {
   });
 }
 
-exports.onPostBuild = async () => (
+exports.onPostBuild = async () =>
   new Promise((resolve, reject) => {
     const walker = walk.walk('public');
 
     let allSVGs = [];
 
     walker.on('names', (root, names) => {
+      // Add any SVG filepaths found to allSVGs
       allSVGs = allSVGs.concat(
         names.filter(name => name.substring(name.length - 4) === '.svg')
           .map(name => path.join(root, name)),
@@ -47,8 +49,17 @@ exports.onPostBuild = async () => (
     walker.on('errors', reject);
 
     walker.on('end', async () => {
-      await Promise.all(allSVGs.map(optimizeSVG));
+      if (allSVGs.length === 0) {
+        // Print a warning if no SVGs were found
+        console.warn('gatsby-plugin-optimize-svgs: No SVGs found to optimize!');
+      } else {
+        // Calculate and print some stats
+        const stats = await Promise.all(allSVGs.map(optimizeSVG));
+        const [beforeSize, afterSize] = stats.reduce(([a, b], [c, d]) => [a + c, b + d], [0, 0]);
+        console.log(
+          `${stats.length} SVGs minified, reducing the total size from ${beforeSize} bytes to ${afterSize} bytes!`,
+        );
+      }
       resolve();
     });
-  })
-);
+  });
