@@ -32,34 +32,36 @@ async function optimizeSVG(svgPath) {
   });
 }
 
-exports.onPostBuild = async () =>
-  new Promise((resolve, reject) => {
-    const walker = walk.walk('public');
+exports.onPostBuild = async () => new Promise((resolve, reject) => {
+  const walker = walk.walk('public');
 
-    let allSVGs = [];
+  let allSVGs = [];
 
-    walker.on('names', (root, names) => {
-      // Add any SVG filepaths found to allSVGs
-      allSVGs = allSVGs.concat(
-        names.filter(name => name.substring(name.length - 4) === '.svg')
-          .map(name => path.join(root, name)),
-      );
-    });
-
-    walker.on('errors', reject);
-
-    walker.on('end', async () => {
-      if (allSVGs.length === 0) {
-        // Print a warning if no SVGs were found
-        console.warn('gatsby-plugin-optimize-svgs: No SVGs found to optimize!');
-      } else {
-        // Calculate and print some stats
-        const stats = await Promise.all(allSVGs.map(optimizeSVG));
-        const [beforeSize, afterSize] = stats.reduce(([a, b], [c, d]) => [a + c, b + d], [0, 0]);
-        console.log(
-          `${stats.length} SVGs minified, reducing the total size from ${beforeSize} bytes to ${afterSize} bytes!`,
-        );
-      }
-      resolve();
-    });
+  walker.on('names', (root, names) => {
+    // Add any SVG filepaths found to allSVGs
+    allSVGs = allSVGs.concat(
+      names.filter(name => name.substring(name.length - 4) === '.svg')
+        .map(name => path.join(root, name)),
+    );
   });
+
+  walker.on('errors', reject);
+
+  walker.on('end', async () => {
+    if (allSVGs.length === 0) {
+      // Print a warning if no SVGs were found
+      // eslint-disable-next-line no-console
+      console.warn('gatsby-plugin-optimize-svgs: No SVGs found to optimize!');
+    } else {
+      // Calculate and print some stats
+      const stats = await Promise.all(allSVGs.map(optimizeSVG));
+      const [beforeSize, afterSize] = stats.reduce(([a, b], [c, d]) => [a + c, b + d], [0, 0]);
+
+      // eslint-disable-next-line no-console
+      console.log(
+        `${stats.length} SVGs minified, reducing the total size from ${beforeSize} bytes to ${afterSize} bytes!`,
+      );
+    }
+    resolve();
+  });
+});
