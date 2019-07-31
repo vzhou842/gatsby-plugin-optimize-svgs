@@ -8,29 +8,27 @@ const svgo = new SVGO();
 const cwd = process.cwd();
 
 // Resolves with [beforeSize, afterSize]
-async function optimizeSVG(svgPath) {
-  return new Promise((resolve, reject) => {
-    const fullPath = path.join(cwd, svgPath);
-    fs.readFile(fullPath, 'utf8', (readErr, data) => {
-      if (readErr) {
-        reject(readErr);
-        return;
-      }
+const optimizeSVG = async svgPath => new Promise((resolve, reject) => {
+  const fullPath = path.join(cwd, svgPath);
+  fs.readFile(fullPath, 'utf8', (readErr, data) => {
+    if (readErr) {
+      reject(readErr);
+      return;
+    }
 
-      svgo.optimize(data)
-        .then(({ data: result }) => {
-          fs.writeFile(fullPath, result, 'utf8', writeErr => {
-            if (writeErr) {
-              reject(writeErr);
-            } else {
-              resolve([data.length, result.length]);
-            }
-          });
-        })
-        .catch(reject);
-    });
+    svgo.optimize(data)
+      .then(({ data: result }) => {
+        fs.writeFile(fullPath, result, 'utf8', writeErr => {
+          if (writeErr) {
+            reject(writeErr);
+          } else {
+            resolve([data.length, result.length]);
+          }
+        });
+      })
+      .catch(reject);
   });
-}
+});
 
 exports.onPostBuild = async () => new Promise((resolve, reject) => {
   const walker = walk.walk('public');
@@ -40,8 +38,8 @@ exports.onPostBuild = async () => new Promise((resolve, reject) => {
   walker.on('names', (root, names) => {
     // Add any SVG filepaths found to allSVGs
     allSVGs = allSVGs.concat(
-      names.filter(name => name.substring(name.length - 4) === '.svg')
-        .map(name => path.join(root, name)),
+      names.filter(n => n.substring(n.length - 4) === '.svg')
+        .map(n => path.join(root, n)),
     );
   });
 
