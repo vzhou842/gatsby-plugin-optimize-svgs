@@ -9,6 +9,7 @@
   "repository": "https://github.com/vzhou842/gatsby-plugin-optimize-svgs",
   "author": "Victor Zhou <vzhou842@gmail.com>",
   "license": "MIT",
+  "keywords": ["gatsby", "gatsby-plugin", "svg", "minify", "optimize"],
   "dependencies": {
     "svgo": "^1.3.0",
     "walk": "^2.3.14"
