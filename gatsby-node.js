@@ -5,7 +5,7 @@ const process = require('process');
 const path = require('path');
 
 const svgo = new SVGO({
-  plugins: [{removeViewBox: false}]
+  plugins: [{ removeViewBox: false }],
 });
 const cwd = process.cwd();
 
