@@ -4,7 +4,9 @@ const walk = require('walk');
 const process = require('process');
 const path = require('path');
 
-const svgo = new SVGO();
+const svgo = new SVGO({
+  plugins: [{ removeViewBox: false }],
+});
 const cwd = process.cwd();
 
 // Resolves with [beforeSize, afterSize]
