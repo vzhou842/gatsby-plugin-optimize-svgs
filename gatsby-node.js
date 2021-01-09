@@ -32,7 +32,7 @@ const optimizeSVG = async svgPath => new Promise((resolve, reject) => {
   });
 });
 
-exports.onPostBuild = async () => new Promise((resolve, reject) => {
+exports.onPostBuild = async ({ reporter }) => new Promise((resolve, reject) => {
   const walker = walk.walk('public');
 
   let allSVGs = [];
@@ -50,15 +50,13 @@ exports.onPostBuild = async () => new Promise((resolve, reject) => {
   walker.on('end', async () => {
     if (allSVGs.length === 0) {
       // Print a warning if no SVGs were found
-      // eslint-disable-next-line no-console
-      console.warn('gatsby-plugin-optimize-svgs: No SVGs found to optimize!');
+      reporter.warn('gatsby-plugin-optimize-svgs: No SVGs found to optimize!');
     } else {
       // Calculate and print some stats
       const stats = await Promise.all(allSVGs.map(optimizeSVG));
       const [beforeSize, afterSize] = stats.reduce(([a, b], [c, d]) => [a + c, b + d], [0, 0]);
 
-      // eslint-disable-next-line no-console
-      console.log(
+      reporter.success(
         `${stats.length} SVGs minified, reducing the total size from ${beforeSize} bytes to ${afterSize} bytes, a reduction of ${(100 * (beforeSize - afterSize) / beforeSize).toFixed(1)}%!`,
       );
     }
